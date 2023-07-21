@@ -13,5 +13,5 @@ $ npm install
 Start the example demo
 
 ```bash
-$ npm start
+$ npm run start
 ```
