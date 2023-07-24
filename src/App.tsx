@@ -10,8 +10,10 @@ import { GraphQLClient } from 'graphql-request'
 import './App.css';
 
 const chainId = ChainId.BSC
-const nativeCurrency = Native.onChain(chainId);
-const swapToToken = bscTokens.usdt
+// const swapFrom = Native.onChain(chainId);
+// const swapTo = bscTokens.usdt
+const swapFrom = bscTokens.usdt
+const swapTo = Native.onChain(chainId)
 
 const publicClient = createPublicClient({
   chain: mainnet,
@@ -56,7 +58,7 @@ function Main() {
   const { sendTransactionAsync } = useSendTransaction()
 
   const [trade, setTrade] = useState<SmartRouterTrade<TradeType> | null>(null)
-  const amount = useMemo(() => CurrencyAmount.fromRawAmount(nativeCurrency, 10 ** 16), [])
+  const amount = useMemo(() => CurrencyAmount.fromRawAmount(swapFrom, 10 ** 16), [])
   const getBestRoute = useCallback(async () => {
     const [v2Pools, v3Pools] = await Promise.all([
       SmartRouter.getV2CandidatePools({
@@ -64,19 +66,19 @@ function Main() {
         v2SubgraphProvider: () => v2SubgraphClient,
         v3SubgraphProvider: () => v3SubgraphClient,
         currencyA: amount.currency,
-        currencyB: swapToToken,
+        currencyB: swapTo,
       }),
       SmartRouter.getV3CandidatePools({
         onChainProvider: () => publicClient,
         subgraphProvider: () => v3SubgraphClient,
         currencyA: amount.currency,
-        currencyB: swapToToken,
+        currencyB: swapTo,
       }),
     ])
     const pools = [...v2Pools, ...v3Pools]
     const trade = await SmartRouter.getBestTrade(
       amount,
-      swapToToken,
+      swapTo,
       TradeType.EXACT_INPUT,
       {
         gasPriceWei: () => publicClient.getGasPrice(),
@@ -142,7 +144,7 @@ function Main() {
           Pancakeswap Smart Router Example.
         </p>
         <p>
-          Get best quote swapping from {amount.toExact()} {amount.currency.symbol} to {trade?.outputAmount.toExact() || '?'} {swapToToken.symbol}
+          Get best quote swapping from {amount.toExact()} {amount.currency.symbol} to {trade?.outputAmount.toExact() || '?'} {swapTo.symbol}
         </p>
         <p>
           {isConnected ? address : (
