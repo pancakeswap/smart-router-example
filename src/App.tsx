@@ -1,13 +1,22 @@
-import { Native, ChainId, CurrencyAmount, TradeType, Percent } from "@pancakeswap/sdk";
-import { SmartRouter, SmartRouterTrade, SMART_ROUTER_ADDRESSES, SwapRouter } from "@pancakeswap/smart-router/evm";
-import { bscTokens } from "@pancakeswap/tokens";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { WagmiConfig, createConfig, mainnet, useAccount, useConnect, useSwitchNetwork, useNetwork, useSendTransaction } from 'wagmi'
+import { Native, ChainId, CurrencyAmount, TradeType, Percent } from '@pancakeswap/sdk'
+import { SmartRouter, SmartRouterTrade, SMART_ROUTER_ADDRESSES, SwapRouter } from '@pancakeswap/smart-router/evm'
+import { bscTokens } from '@pancakeswap/tokens'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import {
+  WagmiConfig,
+  createConfig,
+  mainnet,
+  useAccount,
+  useConnect,
+  useSwitchNetwork,
+  useNetwork,
+  useSendTransaction,
+} from 'wagmi'
 import { MetaMaskConnector } from 'wagmi/connectors/metaMask'
-import { createPublicClient, hexToBigInt, http } from 'viem';
+import { createPublicClient, hexToBigInt, http } from 'viem'
 import { GraphQLClient } from 'graphql-request'
 
-import './App.css';
+import './App.css'
 
 const chainId = ChainId.BSC
 // const swapFrom = Native.onChain(chainId);
@@ -27,16 +36,16 @@ const publicClient = createPublicClient({
 
 const config = createConfig({
   autoConnect: true,
-  connectors: [
-    new MetaMaskConnector({ chains: [mainnet] }),
-  ],
+  connectors: [new MetaMaskConnector({ chains: [mainnet] })],
   publicClient,
 })
 
 const v3SubgraphClient = new GraphQLClient('https://api.thegraph.com/subgraphs/name/pancakeswap/exchange-v3-bsc')
 const v2SubgraphClient = new GraphQLClient('https://proxy-worker-api.pancakeswap.com/bsc-exchange')
 
-const quoteProvider = SmartRouter.createQuoteProvider({ onChainProvider: () => publicClient })
+const quoteProvider = SmartRouter.createQuoteProvider({
+  onChainProvider: () => publicClient,
+})
 
 function calculateGasMargin(value: bigint, margin = 1000n): bigint {
   return (value * (10000n + margin)) / 10000n
@@ -47,7 +56,7 @@ function App() {
     <WagmiConfig config={config}>
       <Main />
     </WagmiConfig>
-  );
+  )
 }
 
 function Main() {
@@ -73,24 +82,20 @@ function Main() {
         subgraphProvider: () => v3SubgraphClient,
         currencyA: amount.currency,
         currencyB: swapTo,
+        subgraphCacheFallback: false,
       }),
     ])
     const pools = [...v2Pools, ...v3Pools]
-    const trade = await SmartRouter.getBestTrade(
-      amount,
-      swapTo,
-      TradeType.EXACT_INPUT,
-      {
-        gasPriceWei: () => publicClient.getGasPrice(),
-        maxHops: 2,
-        maxSplits: 2,
-        poolProvider: SmartRouter.createStaticPoolProvider(pools),
-        quoteProvider,
-        quoterOptimization: true,
-      },
-    );
+    const trade = await SmartRouter.getBestTrade(amount, swapTo, TradeType.EXACT_INPUT, {
+      gasPriceWei: () => publicClient.getGasPrice(),
+      maxHops: 2,
+      maxSplits: 2,
+      poolProvider: SmartRouter.createStaticPoolProvider(pools),
+      quoteProvider,
+      quoterOptimization: true,
+    })
     setTrade(trade)
-  }, [amount]);
+  }, [amount])
 
   const swapCallParams = useMemo(() => {
     if (!trade) {
@@ -140,23 +145,22 @@ function Main() {
   return (
     <div className="App">
       <header className="App-header">
+        <p>Pancakeswap Smart Router Example.</p>
         <p>
-          Pancakeswap Smart Router Example.
+          Get best quote swapping from {amount.toExact()} {amount.currency.symbol} to{' '}
+          {trade?.outputAmount.toExact() || '?'} {swapTo.symbol}
         </p>
         <p>
-          Get best quote swapping from {amount.toExact()} {amount.currency.symbol} to {trade?.outputAmount.toExact() || '?'} {swapTo.symbol}
-        </p>
-        <p>
-          {isConnected ? address : (
+          {isConnected ? (
+            address
+          ) : (
             <button onClick={() => connect({ connector: connectors[0] })}>Connect wallet</button>
           )}
         </p>
-        <p>
-          {!trade ? (<button onClick={getBestRoute}>Get Quote</button>) : (<button onClick={swap}>Swap</button>)}
-        </p>
+        <p>{!trade ? <button onClick={getBestRoute}>Get Quote</button> : <button onClick={swap}>Swap</button>}</p>
       </header>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
