@@ -15,3 +15,8 @@ Start the example demo
 ```bash
 $ npm run start
 ```
+
+## Usage examples
+
+- [V4 router](https://github.com/pancakeswap/smart-router-example/blob/master/src/V4RouterExample.tsx)
+- [Smart router](https://github.com/pancakeswap/smart-router-example/blob/master/src/SmartRouterExample.tsx)
