@@ -1,13 +1,32 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+
 import './index.css'
-import App from './App'
 import reportWebVitals from './reportWebVitals'
+import { SmartRouterExample } from './SmartRouterExample'
+import { App } from './App'
+import { V4RouterExample } from './V4RouterExample'
+
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <App />,
+  },
+  {
+    path: '/v4-router',
+    element: <V4RouterExample />,
+  },
+  {
+    path: '/smart-router',
+    element: <SmartRouterExample />,
+  },
+])
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
   <React.StrictMode>
-    <App />
+    <RouterProvider router={router} />
   </React.StrictMode>,
 )
 
