@@ -2,8 +2,8 @@ import { Native, ChainId, CurrencyAmount, TradeType } from '@pancakeswap/sdk'
 import { V4Router } from '@pancakeswap/smart-router'
 import { bscTokens } from '@pancakeswap/tokens'
 import { useCallback, useMemo, useState } from 'react'
-import { mainnet } from 'wagmi'
 import { createPublicClient, http } from 'viem'
+import { bsc } from 'viem/chains'
 
 import './App.css'
 
@@ -12,7 +12,7 @@ const swapFrom = Native.onChain(chainId)
 const swapTo = bscTokens.usdt
 
 const client = createPublicClient({
-  chain: mainnet,
+  chain: bsc,
   transport: http('https://bsc-dataseed1.binance.org'),
   batch: {
     multicall: {

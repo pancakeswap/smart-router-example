@@ -5,7 +5,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   WagmiConfig,
   createConfig,
-  mainnet,
   useAccount,
   useConnect,
   useSwitchNetwork,
@@ -14,6 +13,7 @@ import {
 } from 'wagmi'
 import { MetaMaskConnector } from 'wagmi/connectors/metaMask'
 import { createPublicClient, hexToBigInt, http } from 'viem'
+import { bsc } from 'viem/chains'
 import { GraphQLClient } from 'graphql-request'
 
 import './App.css'
@@ -23,7 +23,7 @@ const swapFrom = Native.onChain(chainId)
 const swapTo = bscTokens.usdt
 
 const publicClient = createPublicClient({
-  chain: mainnet,
+  chain: bsc,
   transport: http('https://bsc-dataseed1.binance.org'),
   batch: {
     multicall: {
@@ -34,7 +34,7 @@ const publicClient = createPublicClient({
 
 const config = createConfig({
   autoConnect: true,
-  connectors: [new MetaMaskConnector({ chains: [mainnet] })],
+  connectors: [new MetaMaskConnector({ chains: [bsc] })],
   publicClient,
 })
 
