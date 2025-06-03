@@ -1,19 +1,20 @@
 import { Native, ChainId, CurrencyAmount, TradeType, Percent } from '@pancakeswap/sdk'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { SmartRouter, SmartRouterTrade, SMART_ROUTER_ADDRESSES, SwapRouter } from '@pancakeswap/smart-router'
 import { bscTokens } from '@pancakeswap/tokens'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
-  WagmiConfig,
+  WagmiProvider,
   createConfig,
   useAccount,
   useConnect,
-  useSwitchNetwork,
-  useNetwork,
+  useSwitchChain,
+  useChainId,
   useSendTransaction,
 } from 'wagmi'
-import { MetaMaskConnector } from 'wagmi/connectors/metaMask'
+import { bsc } from 'wagmi/chains'
+
 import { createPublicClient, hexToBigInt, http } from 'viem'
-import { bsc } from 'viem/chains'
 import { GraphQLClient } from 'graphql-request'
 
 import './App.css'
@@ -21,6 +22,7 @@ import './App.css'
 const chainId = ChainId.BSC
 const swapFrom = Native.onChain(chainId)
 const swapTo = bscTokens.usdt
+const queryClient = new QueryClient()
 
 const publicClient = createPublicClient({
   chain: bsc,
@@ -32,10 +34,11 @@ const publicClient = createPublicClient({
   },
 })
 
-const config = createConfig({
-  autoConnect: true,
-  connectors: [new MetaMaskConnector({ chains: [bsc] })],
-  publicClient,
+export const config = createConfig({
+  chains: [bsc],
+  transports: {
+    [bsc.id]: http('https://bsc-dataseed1.binance.org'),
+  },
 })
 
 const v3SubgraphClient = new GraphQLClient('https://api.thegraph.com/subgraphs/name/pancakeswap/exchange-v3-bsc')
@@ -51,17 +54,19 @@ function calculateGasMargin(value: bigint, margin = 1000n): bigint {
 
 export function SmartRouterExample() {
   return (
-    <WagmiConfig config={config}>
-      <Main />
-    </WagmiConfig>
+    <WagmiProvider config={config}>
+      <QueryClientProvider client={queryClient}>
+        <Main />
+      </QueryClientProvider>
+    </WagmiProvider>
   )
 }
 
 function Main() {
-  const { chain } = useNetwork()
+  const currentChainId = useChainId()
   const { address, isConnected } = useAccount()
   const { connect, connectors } = useConnect()
-  const { switchNetwork } = useSwitchNetwork()
+  const { switchChainAsync: switchNetwork } = useSwitchChain()
   const { sendTransactionAsync } = useSendTransaction()
 
   const [trade, setTrade] = useState<SmartRouterTrade<TradeType> | null>(null)
@@ -135,10 +140,10 @@ function Main() {
   }, [swapCallParams, address, sendTransactionAsync])
 
   useEffect(() => {
-    if (isConnected && chain?.id !== chainId) {
-      switchNetwork?.(chainId)
+    if (isConnected && currentChainId !== chainId) {
+      switchNetwork?.({ chainId })
     }
-  }, [isConnected, switchNetwork, chain])
+  }, [isConnected, switchNetwork, currentChainId])
 
   return (
     <div className="App">

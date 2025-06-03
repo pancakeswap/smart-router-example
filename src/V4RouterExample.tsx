@@ -1,5 +1,5 @@
 import { Native, ChainId, CurrencyAmount, TradeType } from '@pancakeswap/sdk'
-import { V4Router } from '@pancakeswap/smart-router'
+import { InfinityRouter } from '@pancakeswap/smart-router'
 import { bscTokens } from '@pancakeswap/tokens'
 import { useCallback, useMemo, useState } from 'react'
 import { createPublicClient, http } from 'viem'
@@ -22,16 +22,16 @@ const client = createPublicClient({
 })
 
 export function V4RouterExample() {
-  const [trade, setTrade] = useState<Awaited<ReturnType<typeof V4Router.getBestTrade>> | undefined>(undefined)
+  const [trade, setTrade] = useState<Awaited<ReturnType<typeof InfinityRouter.getBestTrade>> | undefined>(undefined)
   const amount = useMemo(() => CurrencyAmount.fromRawAmount(swapFrom, 10 ** 16), [])
   const getBestRoute = useCallback(async () => {
-    const v3Pools = await V4Router.getV3CandidatePools({
+    const v3Pools = await InfinityRouter.getV3CandidatePools({
       clientProvider: () => client,
       currencyA: swapFrom,
       currencyB: swapTo,
     })
     const pools = [...v3Pools]
-    const trade = await V4Router.getBestTrade(amount, swapTo, TradeType.EXACT_INPUT, {
+    const trade = await InfinityRouter.getBestTrade(amount, swapTo, TradeType.EXACT_INPUT, {
       gasPriceWei: () => client.getGasPrice(),
       candidatePools: pools,
     })
