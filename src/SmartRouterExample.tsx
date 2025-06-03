@@ -1,4 +1,4 @@
-import { Native, ChainId, CurrencyAmount, TradeType, Percent } from '@pancakeswap/sdk'
+import { Native, ChainId, CurrencyAmount, TradeType, Percent, ERC20Token } from '@pancakeswap/sdk'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { SmartRouter, SmartRouterTrade, SMART_ROUTER_ADDRESSES, SwapRouter } from '@pancakeswap/smart-router'
 import { bscTokens } from '@pancakeswap/tokens'
@@ -12,21 +12,33 @@ import {
   useChainId,
   useSendTransaction,
 } from 'wagmi'
-import { bsc } from 'wagmi/chains'
+import { bsc, bscTestnet } from 'wagmi/chains'
 
 import { createPublicClient, hexToBigInt, http } from 'viem'
 import { GraphQLClient } from 'graphql-request'
 
 import './App.css'
 
-const chainId = ChainId.BSC
-const swapFrom = Native.onChain(chainId)
-const swapTo = bscTokens.usdt
+// const chainId = ChainId.BSC
+// const swapFrom = Native.onChain(chainId)
+// const swapTo = bscTokens.usdt
+const chainId = ChainId.BSC_TESTNET
+const swapFrom = new ERC20Token(ChainId.BSC_TESTNET, '0x5ef87aFd66B1f85e891628C1c76Ac5F2541e4779', 18, 'USDT', 'USDT')
+const swapTo = new ERC20Token(ChainId.BSC_TESTNET, '0x6E8Ea345D2E7c0695c18a6016621A215BF212aAE', 18, 'ttt2', 'ttt2')
 const queryClient = new QueryClient()
 
+// const publicClient = createPublicClient({
+//   chain: bsc,
+//   transport: http('https://bsc-dataseed1.binance.org'),
+//   batch: {
+//     multicall: {
+//       batchSize: 1024 * 200,
+//     },
+//   },
+// })
 const publicClient = createPublicClient({
   chain: bsc,
-  transport: http('https://bsc-dataseed1.binance.org'),
+  transport: http('https://data-seed-prebsc-1-s1.bnbchain.org:8545'),
   batch: {
     multicall: {
       batchSize: 1024 * 200,
@@ -35,9 +47,10 @@ const publicClient = createPublicClient({
 })
 
 export const config = createConfig({
-  chains: [bsc],
+  chains: [bsc, bscTestnet],
   transports: {
     [bsc.id]: http('https://bsc-dataseed1.binance.org'),
+    [bscTestnet.id]: http(),
   },
 })
 
