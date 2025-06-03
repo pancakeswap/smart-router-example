@@ -7,16 +7,16 @@ Usage example of [@pancakeswap/smart-router](https://github.com/pancakeswap/panc
 Install dependencies
 
 ```bash
-$ npm install
+npm install
 ```
 
 Start the example demo
 
 ```bash
-$ npm run start
+npm run start
 ```
 
 ## Usage examples
 
-- [V4 router](https://github.com/pancakeswap/smart-router-example/blob/master/src/V4RouterExample.tsx)
+- [Infinity router](https://github.com/pancakeswap/smart-router-example/blob/master/src/InfinityRouterExample.tsx)
 - [Smart router](https://github.com/pancakeswap/smart-router-example/blob/master/src/SmartRouterExample.tsx)

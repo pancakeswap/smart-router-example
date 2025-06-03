@@ -21,7 +21,7 @@ const client = createPublicClient({
   },
 })
 
-export function V4RouterExample() {
+export function InfinityRouterExample() {
   const [trade, setTrade] = useState<Awaited<ReturnType<typeof InfinityRouter.getBestTrade>> | undefined>(undefined)
   const amount = useMemo(() => CurrencyAmount.fromRawAmount(swapFrom, 10 ** 16), [])
   const getBestRoute = useCallback(async () => {
@@ -41,7 +41,7 @@ export function V4RouterExample() {
   return (
     <div className="App">
       <header className="App-header">
-        <p>Pancakeswap V4 Router Example.</p>
+        <p>Pancakeswap Infinity Router Example.</p>
         <p>
           Get best quote swapping from {amount.toExact()} {amount.currency.symbol} to{' '}
           {trade?.outputAmount.toExact() || '?'} {swapTo.symbol}

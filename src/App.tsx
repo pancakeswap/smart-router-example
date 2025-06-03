@@ -8,7 +8,7 @@ export function App() {
       <header className="App-header">
         <ul>
           <li>
-            <Link to="/v4-router">V4 router example</Link>
+            <Link to="/infinity-router">Infinity router example</Link>
           </li>
           <li>
             <Link to="/smart-router">Smart router example</Link>

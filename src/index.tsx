@@ -6,7 +6,7 @@ import './index.css'
 import reportWebVitals from './reportWebVitals'
 import { SmartRouterExample } from './SmartRouterExample'
 import { App } from './App'
-import { V4RouterExample } from './V4RouterExample'
+import { InfinityRouterExample } from './InfinityRouterExample'
 
 const router = createBrowserRouter([
   {
@@ -14,8 +14,8 @@ const router = createBrowserRouter([
     element: <App />,
   },
   {
-    path: '/v4-router',
-    element: <V4RouterExample />,
+    path: '/infinity-router',
+    element: <InfinityRouterExample />,
   },
   {
     path: '/smart-router',
