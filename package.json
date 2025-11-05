@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@pancakeswap/sdk": "^5.8.14",
-    "@pancakeswap/smart-router": "^7.2.5",
-    "@pancakeswap/tokens": "^0.7.5",
+    "@pancakeswap/sdk": "^5.8.18",
+    "@pancakeswap/smart-router": "^7.5.4",
+    "@pancakeswap/tokens": "^0.7.10",
     "@tanstack/react-query": "^5.79.2",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
