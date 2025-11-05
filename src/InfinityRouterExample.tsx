@@ -1,5 +1,6 @@
 import { Native, ChainId, CurrencyAmount, TradeType } from '@pancakeswap/sdk'
 import { InfinityRouter } from '@pancakeswap/smart-router'
+import { SmartRouter } from '@pancakeswap/smart-router'
 import { bscTokens } from '@pancakeswap/tokens'
 import { useCallback, useMemo, useState } from 'react'
 import { createPublicClient, http } from 'viem'
@@ -25,17 +26,31 @@ export function InfinityRouterExample() {
   const [trade, setTrade] = useState<Awaited<ReturnType<typeof InfinityRouter.getBestTrade>> | undefined>(undefined)
   const amount = useMemo(() => CurrencyAmount.fromRawAmount(swapFrom, 10 ** 16), [])
   const getBestRoute = useCallback(async () => {
-    const v3Pools = await InfinityRouter.getV3CandidatePools({
-      clientProvider: () => client,
-      currencyA: swapFrom,
-      currencyB: swapTo,
-    })
-    const pools = [...v3Pools]
+    const [v2Pools, ssPools, v3Pools] = await Promise.all([
+      SmartRouter.getV2CandidatePools({
+        onChainProvider: () => client,
+        currencyA: amount.currency,
+        currencyB: swapTo,
+      }),
+      SmartRouter.getStableCandidatePools({
+        onChainProvider: () => client,
+        currencyA: amount.currency,
+        currencyB: swapTo,
+      }),
+      InfinityRouter.getV3CandidatePools({
+        clientProvider: () => client,
+        currencyA: swapFrom,
+        currencyB: swapTo,
+      }),
+    ])
+    const pools = [...v2Pools, ...ssPools, ...v3Pools]
+    console.log('Candidate pools:', pools)
     const trade = await InfinityRouter.getBestTrade(amount, swapTo, TradeType.EXACT_INPUT, {
       gasPriceWei: () => client.getGasPrice(),
       candidatePools: pools,
     })
     setTrade(trade)
+    console.log(trade)
   }, [amount])
 
   return (
